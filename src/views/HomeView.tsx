@@ -1,8 +1,8 @@
+import { JsonInput } from "@components/JsonInput";
+import { validateTreeJSON } from "@utils/validation";
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { JsonInput } from "@components/JsonInput";
 import { useTreeStore } from "../store";
-import { validateTreeJSON } from "@utils/validation";
 
 export function HomeView() {
 	const [error, setError] = useState<string | null>(null);

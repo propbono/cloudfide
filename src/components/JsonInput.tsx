@@ -1,4 +1,4 @@
-import { useState, type DragEvent } from "react";
+import { type DragEvent, useState } from "react";
 
 type Props = {
 	onSubmit: (jsonString: string) => void;
