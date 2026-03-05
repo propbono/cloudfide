@@ -1,4 +1,4 @@
-import { TreeViewSidebar } from "@views/TreeViewSidebar";
+import { TreeViewSidebarView } from "@views/TreeViewSidebarView";
 import { FileCode2 } from "lucide-react";
 import { Link, Navigate, Outlet } from "react-router-dom";
 import { useTreeStore } from "../store";
@@ -26,7 +26,7 @@ export const MainLayout = () => {
 
 			<div className="flex flex-1 overflow-hidden">
 				<aside className="w-80 border-r border-gray-200 bg-gray-50 flex flex-col shrink-0">
-					<TreeViewSidebar />
+					<TreeViewSidebarView />
 				</aside>
 
 				<main className="flex-1 overflow-y-auto bg-white">

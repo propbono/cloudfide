@@ -5,7 +5,7 @@ import { useMemo } from "react";
 import { useSearchParams } from "react-router-dom";
 import { useTreeStore } from "../store";
 
-export function TreeViewSidebar() {
+export function TreeViewSidebarView() {
 	const { tree } = useTreeStore();
 	const [searchParams] = useSearchParams();
 	const query = searchParams.get("q") || "";
