@@ -3,9 +3,10 @@ import type { TreeNode } from "src/types";
 
 type Props = {
 	node: TreeNode;
+	fullPath: string;
 };
 
-export const NodeHeader = ({ node }: Props) => {
+export const NodeHeader = ({ node, fullPath }: Props) => {
 	const isFolder = node.type === "folder";
 
 	return (
@@ -19,11 +20,23 @@ export const NodeHeader = ({ node }: Props) => {
 					<File className="w-8 h-8" />
 				)}
 			</div>
-			<div>
-				<h1 className="text-2xl font-bold text-gray-900">{node.name}</h1>
-				<p className="text-gray-500 font-medium capitalize mt-1 text-sm flex items-center gap-2">
-					{node.type}
-				</p>
+			<div className="flex-1 min-w-0">
+				<h1
+					className="text-2xl font-bold text-gray-900 truncate"
+					title={node.name}
+				>
+					{node.name}
+				</h1>
+				<div className="flex flex-col gap-1 mt-1">
+					<p className="text-gray-500 font-medium capitalize text-sm flex items-center gap-2">
+						{node.type}
+					</p>
+					{!isFolder && (
+						<p className="text-sm text-gray-400 break-all">
+							Path: <span className="font-mono text-gray-600">{fullPath}</span>
+						</p>
+					)}
+				</div>
 			</div>
 		</div>
 	);

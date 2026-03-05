@@ -42,7 +42,7 @@ export function NodeDetailsView() {
 			<NodeBreadcrumbs pathParts={pathParts} />
 
 			<div className="bg-white rounded-2xl shadow-sm border border-gray-200 overflow-hidden">
-				<NodeHeader node={node} />
+				<NodeHeader node={node} fullPath={nodePath} />
 				<NodeStatistics node={node} />
 				{isFolder && (
 					<FolderContents childrenNodes={node.children} parentPath={nodePath} />
