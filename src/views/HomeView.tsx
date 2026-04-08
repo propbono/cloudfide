@@ -1,5 +1,5 @@
 import { JsonInput } from "@components/JsonInput";
-import { validateTreeJSON } from "@utils/validation";
+import { parseTreeAsync } from "@utils/parseTreeAsync";
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { useTreeStore } from "../store";
@@ -17,7 +17,7 @@ export function HomeView() {
 
 	const handleParse = async (input: string) => {
 		try {
-			const parsed = validateTreeJSON(input);
+			const parsed = await parseTreeAsync(input);
 			setTree(parsed);
 			navigate("/tree");
 		} catch (e) {

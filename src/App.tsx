@@ -8,7 +8,8 @@ function App() {
 		<Routes>
 			<Route path="/" element={<HomeView />} />
 			<Route path="/tree" element={<MainLayout />}>
-				<Route path="*" element={<NodeDetailsView />} />
+				<Route path=":nodeId" element={<NodeDetailsView />} />
+				<Route index element={<NodeDetailsView />} />
 			</Route>
 		</Routes>
 	);

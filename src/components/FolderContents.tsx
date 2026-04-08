@@ -5,10 +5,10 @@ import type { TreeNode } from "src/types";
 
 type Props = {
 	childrenNodes: TreeNode[];
-	parentPath: string;
+	parentPath: string; // Keep this for display purposes if needed, but not for routing
 };
 
-export const FolderContents = ({ childrenNodes, parentPath }: Props) => {
+export const FolderContents = ({ childrenNodes }: Props) => {
 	if (childrenNodes.length === 0) return null;
 
 	return (
@@ -18,12 +18,11 @@ export const FolderContents = ({ childrenNodes, parentPath }: Props) => {
 			</h3>
 			<ul className="divide-y divide-gray-100">
 				{childrenNodes.map((child: TreeNode) => {
-					const childPath = `${parentPath}/${child.name}`;
 					const isChildFolder = child.type === "folder";
 					return (
-						<li key={childPath} className="hover:bg-gray-50 transition-colors">
+						<li key={child.id} className="hover:bg-gray-50 transition-colors">
 							<Link
-								to={`/tree/${childPath}`}
+								to={`/tree/${child.id}`}
 								className="flex items-center justify-between px-6 py-4"
 							>
 								<div className="flex items-center gap-3">

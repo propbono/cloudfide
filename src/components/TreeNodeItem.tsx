@@ -1,5 +1,4 @@
 import { ChevronDown, ChevronRight, File, Folder } from "lucide-react";
-import { useState } from "react";
 import { Link, useLocation } from "react-router-dom";
 import type { TreeNode } from "../types";
 
@@ -8,6 +7,7 @@ type Props = {
 	path: string;
 	forceOpen?: boolean;
 	isSearchResult?: boolean;
+	onToggle?: () => void;
 };
 
 export const TreeNodeItem = ({
@@ -15,9 +15,10 @@ export const TreeNodeItem = ({
 	path,
 	forceOpen = false,
 	isSearchResult = false,
+	onToggle,
 }: Props) => {
 	const location = useLocation();
-	const currentUrlPath = `/tree/${path}`;
+	const currentUrlPath = `/tree/${node.id}`;
 
 	// Decoding uri components so paths match even with spaces
 	const decodedPathname = decodeURIComponent(location.pathname);
@@ -26,18 +27,16 @@ export const TreeNodeItem = ({
 		decodedPathname === `${currentUrlPath}/`;
 
 	const isFolder = node.type === "folder";
-	const [isManuallyExpanded, setIsManuallyExpanded] = useState(false);
-	const isExpanded = forceOpen || isManuallyExpanded;
 
 	const handleToggle = (e: React.MouseEvent) => {
 		e.preventDefault();
 		if (isFolder) {
-			setIsManuallyExpanded(!isExpanded);
+			onToggle?.();
 		}
 	};
 
 	return (
-		<li>
+		<li className="list-none">
 			<div
 				className={`flex items-center group py-1 px-2 rounded-md transition-colors ${isActive ? "bg-indigo-50" : "hover:bg-gray-100"}`}
 			>
@@ -47,11 +46,11 @@ export const TreeNodeItem = ({
 							type="button"
 							onClick={handleToggle}
 							className="p-0.5 hover:bg-gray-200 rounded text-gray-500 focus:outline-none focus:ring-2 focus:ring-indigo-300"
-							aria-label={isExpanded ? "Collapse folder" : "Expand folder"}
+							aria-label={forceOpen ? "Collapse folder" : "Expand folder"}
 							aria-hidden="true"
 							tabIndex={-1}
 						>
-							{isExpanded ? (
+							{forceOpen ? (
 								<ChevronDown className="w-4 h-4" />
 							) : (
 								<ChevronRight className="w-4 h-4" />
@@ -84,21 +83,6 @@ export const TreeNodeItem = ({
 					</Link>
 				</div>
 			</div>
-
-			{isFolder &&
-				isExpanded &&
-				!isSearchResult &&
-				node.children.length > 0 && (
-					<ul className="pl-4 mt-0.5 space-y-0.5 border-l border-gray-200 ml-2.5">
-						{node.children.map((child) => (
-							<TreeNodeItem
-								key={child.name}
-								node={child}
-								path={`${path}/${child.name}`}
-							/>
-						))}
-					</ul>
-				)}
 		</li>
 	);
 };

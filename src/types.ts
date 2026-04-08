@@ -1,12 +1,14 @@
 import { z } from "zod";
 
 export type FileNode = {
+	id: string;
 	name: string;
 	type: "file";
 	size: number;
 };
 
 export type FolderNode = {
+	id: string;
 	name: string;
 	type: "folder";
 	children: TreeNode[];
@@ -15,6 +17,7 @@ export type FolderNode = {
 export type TreeNode = FileNode | FolderNode;
 
 const baseNodeSchema = z.object({
+	id: z.string().default(() => crypto.randomUUID()),
 	name: z.string().min(1, "Name cannot be empty"),
 });
 

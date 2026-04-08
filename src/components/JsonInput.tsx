@@ -1,7 +1,7 @@
 import { type DragEvent, useState, useTransition } from "react";
 
 type Props = {
-	onSubmit: (jsonString: string) => void;
+	onSubmit: (jsonString: string) => Promise<void> | void;
 	error?: string | null;
 	onErrorChange?: (error: string | null) => void;
 };
@@ -49,8 +49,8 @@ export const JsonInput = ({ onSubmit, error, onErrorChange }: Props) => {
 	};
 
 	const handleSubmit = () => {
-		startTransition(() => {
-			onSubmit(input);
+		startTransition(async () => {
+			await onSubmit(input);
 		});
 	};
 
