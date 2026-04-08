@@ -1,4 +1,4 @@
-import { type DragEvent, useState } from "react";
+import { type DragEvent, useState, useTransition } from "react";
 
 type Props = {
 	onSubmit: (jsonString: string) => void;
@@ -9,6 +9,7 @@ type Props = {
 export const JsonInput = ({ onSubmit, error, onErrorChange }: Props) => {
 	const [input, setInput] = useState("");
 	const [isDragging, setIsDragging] = useState(false);
+	const [isPending, startTransition] = useTransition();
 
 	const handleFile = (file: File) => {
 		if (file.type !== "application/json") {
@@ -47,6 +48,12 @@ export const JsonInput = ({ onSubmit, error, onErrorChange }: Props) => {
 		}
 	};
 
+	const handleSubmit = () => {
+		startTransition(() => {
+			onSubmit(input);
+		});
+	};
+
 	return (
 		<>
 			{/* biome-ignore lint/a11y/noStaticElementInteractions: Drop zone does not require roles */}
@@ -81,6 +88,7 @@ export const JsonInput = ({ onSubmit, error, onErrorChange }: Props) => {
 							setInput(e.target.value);
 							onErrorChange?.(null);
 						}}
+						disabled={isPending}
 					/>
 					{isDragging && (
 						<div className="absolute inset-0 flex items-center justify-center bg-indigo-50/80 rounded-xl backdrop-blur-sm pointer-events-none">
@@ -94,12 +102,15 @@ export const JsonInput = ({ onSubmit, error, onErrorChange }: Props) => {
 				{/* File Input */}
 				<div className="w-full flex justify-between items-center mt-4 text-sm text-gray-500 font-medium">
 					<span>Or browse files:</span>
-					<label className="cursor-pointer bg-white px-4 py-2 border border-gray-300 rounded-lg shadow-sm hover:bg-gray-50 focus-within:ring-2 focus-within:ring-indigo-500 transition-colors">
+					<label
+						className={`cursor-pointer bg-white px-4 py-2 border border-gray-300 rounded-lg shadow-sm transition-colors ${isPending ? "opacity-50 cursor-not-allowed" : "hover:bg-gray-50 focus-within:ring-2 focus-within:ring-indigo-500"}`}
+					>
 						<span>Upload File</span>
 						<input
 							type="file"
 							accept=".json,application/json"
 							className="sr-only"
+							disabled={isPending}
 							onChange={(e) => {
 								if (e.target.files && e.target.files.length > 0) {
 									handleFile(e.target.files[0]);
@@ -117,10 +128,18 @@ export const JsonInput = ({ onSubmit, error, onErrorChange }: Props) => {
 
 				<button
 					type="button"
-					onClick={() => onSubmit(input)}
-					className="mt-6 w-full py-3 px-6 bg-indigo-600 hover:bg-indigo-700 text-white rounded-xl font-medium transition-colors shadow-md hover:shadow-lg focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2"
+					onClick={handleSubmit}
+					disabled={isPending}
+					className="mt-6 w-full py-3 px-6 bg-indigo-600 hover:bg-indigo-700 disabled:bg-indigo-400 text-white rounded-xl font-medium transition-colors shadow-md hover:shadow-lg focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 flex items-center justify-center gap-2"
 				>
-					Explore Tree
+					{isPending ? (
+						<>
+							<div className="w-5 h-5 border-2 border-white/30 border-t-white rounded-full animate-spin" />
+							Parsing...
+						</>
+					) : (
+						"Explore Tree"
+					)}
 				</button>
 			</div>
 		</>

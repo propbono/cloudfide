@@ -48,6 +48,8 @@ export const TreeNodeItem = ({
 							onClick={handleToggle}
 							className="p-0.5 hover:bg-gray-200 rounded text-gray-500 focus:outline-none focus:ring-2 focus:ring-indigo-300"
 							aria-label={isExpanded ? "Collapse folder" : "Expand folder"}
+							aria-hidden="true"
+							tabIndex={-1}
 						>
 							{isExpanded ? (
 								<ChevronDown className="w-4 h-4" />
@@ -62,6 +64,7 @@ export const TreeNodeItem = ({
 					<Link
 						to={`${currentUrlPath}${location.search}`}
 						className="flex items-center gap-2 flex-1 min-w-0 overflow-hidden text-sm"
+						tabIndex={0}
 					>
 						{isFolder ? (
 							<Folder className="w-4 h-4 shrink-0 text-gray-400" />

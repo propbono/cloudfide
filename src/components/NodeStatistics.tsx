@@ -1,6 +1,7 @@
 import { calculateTotalSize } from "@utils/calculateTotalSize";
 import { formatBytes } from "@utils/formatBytes";
 import { Files } from "lucide-react";
+import { useMemo } from "react";
 import type { TreeNode } from "src/types";
 
 type Props = {
@@ -9,7 +10,7 @@ type Props = {
 
 export const NodeStatistics = ({ node }: Props) => {
 	const isFolder = node.type === "folder";
-	const totalSize = calculateTotalSize(node);
+	const totalSize = useMemo(() => calculateTotalSize(node), [node]);
 
 	return (
 		<div className="p-6 grid grid-cols-1 md:grid-cols-2 gap-6 bg-white">

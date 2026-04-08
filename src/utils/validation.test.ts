@@ -18,20 +18,20 @@ describe("validateTreeJSON", () => {
 
 	it("throws an error for arrays", () => {
 		const arrayJson = JSON.stringify([{ name: "root", type: "folder" }]);
-		expect(() => validateTreeJSON(arrayJson)).toThrow("Invalid tree format");
+		expect(() => validateTreeJSON(arrayJson)).toThrow();
 	});
 
 	it("throws an error for null", () => {
-		expect(() => validateTreeJSON("null")).toThrow("Invalid tree format");
+		expect(() => validateTreeJSON("null")).toThrow();
 	});
 
 	it("throws an error if name is missing", () => {
-		const invalidJson = JSON.stringify({ type: "folder" });
-		expect(() => validateTreeJSON(invalidJson)).toThrow("Invalid tree format");
+		const invalidJson = JSON.stringify({ type: "folder", children: [] });
+		expect(() => validateTreeJSON(invalidJson)).toThrow();
 	});
 
 	it("throws an error if type is missing", () => {
-		const invalidJson = JSON.stringify({ name: "root" });
-		expect(() => validateTreeJSON(invalidJson)).toThrow("Invalid tree format");
+		const invalidJson = JSON.stringify({ name: "root", children: [] });
+		expect(() => validateTreeJSON(invalidJson)).toThrow();
 	});
 });

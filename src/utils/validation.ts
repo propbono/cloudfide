@@ -1,4 +1,4 @@
-import type { TreeNode } from "../types";
+import { type TreeNode, treeNodeSchema } from "../types";
 
 /**
  * Validates and parses a JSON string representing a file tree.
@@ -7,11 +7,6 @@ import type { TreeNode } from "../types";
  * @throws Will throw an Error if the input does not conform to the expected TreeNode format.
  */
 export const validateTreeJSON = (input: string): TreeNode => {
-	const parsed = JSON.parse(input) as TreeNode;
-
-	if (!parsed || typeof parsed !== "object" || !parsed.name || !parsed.type) {
-		throw new Error("Invalid tree format");
-	}
-
-	return parsed;
+	const parsed = JSON.parse(input);
+	return treeNodeSchema.parse(parsed);
 };

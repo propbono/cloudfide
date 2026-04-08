@@ -4,7 +4,15 @@ import { Link, Navigate, Outlet } from "react-router-dom";
 import { useTreeStore } from "../store";
 
 export const MainLayout = () => {
-	const { tree } = useTreeStore();
+	const { tree, setTree, isInitializing } = useTreeStore();
+
+	if (isInitializing) {
+		return (
+			<div className="flex h-full w-full items-center justify-center bg-white">
+				<div className="w-8 h-8 border-4 border-indigo-600 border-t-transparent rounded-full animate-spin" />
+			</div>
+		);
+	}
 
 	if (!tree) {
 		return <Navigate to="/" replace />;
@@ -22,13 +30,14 @@ export const MainLayout = () => {
 						FileTree Explorer
 					</span>
 				</Link>
-				<Link
-					to="/"
-					className="flex items-center gap-2 text-sm font-medium text-gray-500 hover:text-indigo-600 transition-colors px-3 py-1.5 rounded-lg hover:bg-gray-50"
+				<button
+					type="button"
+					onClick={() => setTree(null)}
+					className="flex items-center gap-2 text-sm font-medium text-gray-500 hover:text-indigo-600 transition-colors px-3 py-1.5 rounded-lg hover:bg-gray-50 cursor-pointer"
 				>
 					<RotateCcw className="w-4 h-4" />
 					Load new tree
-				</Link>
+				</button>
 			</header>
 
 			<div className="flex flex-1 overflow-hidden">

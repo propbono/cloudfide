@@ -6,45 +6,34 @@ import {
 	useState,
 } from "react";
 import type { TreeNode } from "./types";
-import {
-	loadTreeFromStorage,
-	parseStorageEvent,
-	saveTreeToStorage,
-} from "./utils/storage";
+import { loadTreeFromStorage, saveTreeToStorage } from "./utils/storage";
 
 type TreeContextType = {
 	tree: TreeNode | null;
 	setTree: (tree: TreeNode | null) => void;
+	isInitializing: boolean;
 };
 
 const TreeContext = createContext<TreeContextType | undefined>(undefined);
 
 export const TreeProvider = ({ children }: { children: ReactNode }) => {
-	const [tree, setTreeState] = useState<TreeNode | null>(() =>
-		loadTreeFromStorage(),
-	);
+	const [tree, setTreeState] = useState<TreeNode | null>(null);
+	const [isInitializing, setIsInitializing] = useState(true);
+
+	useEffect(() => {
+		loadTreeFromStorage().then((savedTree) => {
+			setTreeState(savedTree);
+			setIsInitializing(false);
+		});
+	}, []);
 
 	const setTree = (newTree: TreeNode | null) => {
 		setTreeState(newTree);
 		saveTreeToStorage(newTree);
 	};
 
-	useEffect(() => {
-		const handleStorageChange = (e: StorageEvent) => {
-			const newTree = parseStorageEvent(e);
-			if (newTree !== undefined) {
-				setTreeState(newTree);
-			}
-		};
-
-		if (typeof window !== "undefined") {
-			window.addEventListener("storage", handleStorageChange);
-			return () => window.removeEventListener("storage", handleStorageChange);
-		}
-	}, []);
-
 	return (
-		<TreeContext.Provider value={{ tree, setTree }}>
+		<TreeContext.Provider value={{ tree, setTree, isInitializing }}>
 			{children}
 		</TreeContext.Provider>
 	);

@@ -1,14 +1,12 @@
+import { del, get, set } from "idb-keyval";
 import { beforeEach, describe, expect, it, vi } from "vitest";
 import type { TreeNode } from "../types";
-import {
-	loadTreeFromStorage,
-	parseStorageEvent,
-	saveTreeToStorage,
-} from "./storage";
+import { loadTreeFromStorage, saveTreeToStorage } from "./storage";
 
-// Mock validation to isolate storage logic
-vi.mock("@utils/validation", () => ({
-	validateTreeJSON: vi.fn((input: string) => JSON.parse(input)),
+vi.mock("idb-keyval", () => ({
+	get: vi.fn(),
+	set: vi.fn(),
+	del: vi.fn(),
 }));
 
 const MOCK_TREE: TreeNode = {
@@ -25,103 +23,57 @@ const STORAGE_KEY = "fileTree";
 describe("storage utils", () => {
 	beforeEach(() => {
 		vi.clearAllMocks();
-		localStorage.clear();
 	});
 
 	describe("saveTreeToStorage", () => {
-		it("should save tree to localStorage when tree is provided", () => {
-			saveTreeToStorage(MOCK_TREE);
-			expect(localStorage.getItem(STORAGE_KEY)).toBe(JSON.stringify(MOCK_TREE));
+		it("should save tree to IndexedDB when tree is provided", async () => {
+			await saveTreeToStorage(MOCK_TREE);
+			expect(set).toHaveBeenCalledWith(STORAGE_KEY, MOCK_TREE);
 		});
 
-		it("should remove tree from localStorage when null is provided", () => {
-			localStorage.setItem(STORAGE_KEY, "some data");
-			saveTreeToStorage(null);
-			expect(localStorage.getItem(STORAGE_KEY)).toBeNull();
+		it("should remove tree from IndexedDB when null is provided", async () => {
+			await saveTreeToStorage(null);
+			expect(del).toHaveBeenCalledWith(STORAGE_KEY);
 		});
 
-		it("should handle localStorage errors gracefully", () => {
+		it("should handle IndexedDB errors gracefully", async () => {
 			const consoleSpy = vi.spyOn(console, "warn").mockImplementation(() => {});
-			const setItemSpy = vi
-				.spyOn(Storage.prototype, "setItem")
-				.mockImplementation(() => {
-					throw new Error("QuotaExceeded");
-				});
+			vi.mocked(set).mockRejectedValueOnce(new Error("QuotaExceeded"));
 
-			saveTreeToStorage(MOCK_TREE);
+			await saveTreeToStorage(MOCK_TREE);
 
 			expect(consoleSpy).toHaveBeenCalledWith(
-				"Failed to save tree to localStorage:",
+				"Failed to save tree to IndexedDB:",
 				"QuotaExceeded",
 			);
 			consoleSpy.mockRestore();
-			setItemSpy.mockRestore();
 		});
 	});
 
 	describe("loadTreeFromStorage", () => {
-		it("should return parsed tree when localStorage has valid data", () => {
-			localStorage.setItem(STORAGE_KEY, JSON.stringify(MOCK_TREE));
-			const result = loadTreeFromStorage();
+		it("should return parsed tree when IndexedDB has valid data", async () => {
+			vi.mocked(get).mockResolvedValueOnce(MOCK_TREE);
+			const result = await loadTreeFromStorage();
 			expect(result).toEqual(MOCK_TREE);
 		});
 
-		it("should return null when localStorage is empty", () => {
-			const result = loadTreeFromStorage();
+		it("should return null when IndexedDB is empty", async () => {
+			vi.mocked(get).mockResolvedValueOnce(undefined);
+			const result = await loadTreeFromStorage();
 			expect(result).toBeNull();
 		});
 
-		it("should handle localStorage errors gracefully", () => {
+		it("should handle IndexedDB errors gracefully", async () => {
 			const consoleSpy = vi.spyOn(console, "warn").mockImplementation(() => {});
-			vi.spyOn(Storage.prototype, "getItem").mockImplementation(() => {
-				throw new Error("AccessDenied");
-			});
+			vi.mocked(get).mockRejectedValueOnce(new Error("AccessDenied"));
 
-			const result = loadTreeFromStorage();
+			const result = await loadTreeFromStorage();
 
 			expect(result).toBeNull();
 			expect(consoleSpy).toHaveBeenCalledWith(
-				"Failed to load tree from localStorage:",
+				"Failed to load tree from IndexedDB:",
 				"AccessDenied",
 			);
-			consoleSpy.mockRestore();
-		});
-	});
-
-	describe("parseStorageEvent", () => {
-		it("should return undefined if key does not match", () => {
-			const event = new StorageEvent("storage", { key: "otherKey" });
-			expect(parseStorageEvent(event)).toBeUndefined();
-		});
-
-		it("should return parsed tree if newValue is present", () => {
-			const event = new StorageEvent("storage", {
-				key: STORAGE_KEY,
-				newValue: JSON.stringify(MOCK_TREE),
-			});
-			expect(parseStorageEvent(event)).toEqual(MOCK_TREE);
-		});
-
-		it("should return null if newValue is null (cleared)", () => {
-			const event = new StorageEvent("storage", {
-				key: STORAGE_KEY,
-				newValue: null,
-			});
-			expect(parseStorageEvent(event)).toBeNull();
-		});
-
-		it("should handle parsing errors gracefully", () => {
-			const consoleSpy = vi.spyOn(console, "warn").mockImplementation(() => {});
-			const event = new StorageEvent("storage", {
-				key: STORAGE_KEY,
-				newValue: "invalid-json",
-			});
-
-			// Since our mock just does JSON.parse, it will throw
-			const result = parseStorageEvent(event);
-
-			expect(result).toBeUndefined();
-			expect(consoleSpy).toHaveBeenCalled();
 			consoleSpy.mockRestore();
 		});
 	});

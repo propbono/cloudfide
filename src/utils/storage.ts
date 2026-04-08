@@ -1,50 +1,34 @@
-import { validateTreeJSON } from "@utils/validation";
+import { del, get, set } from "idb-keyval";
 import type { TreeNode } from "../types";
 
 const STORAGE_KEY = "fileTree";
 
-export const loadTreeFromStorage = (): TreeNode | null => {
+export const loadTreeFromStorage = async (): Promise<TreeNode | null> => {
 	try {
-		const saved = localStorage.getItem(STORAGE_KEY);
-		return saved ? validateTreeJSON(saved) : null;
+		const saved = await get<TreeNode>(STORAGE_KEY);
+		return saved || null;
 	} catch (e) {
 		console.warn(
-			"Failed to load tree from localStorage:",
+			"Failed to load tree from IndexedDB:",
 			e instanceof Error ? e.message : "Unknown error",
 		);
 		return null;
 	}
 };
 
-export const saveTreeToStorage = (tree: TreeNode | null): void => {
+export const saveTreeToStorage = async (
+	tree: TreeNode | null,
+): Promise<void> => {
 	try {
 		if (tree) {
-			localStorage.setItem(STORAGE_KEY, JSON.stringify(tree));
+			await set(STORAGE_KEY, tree);
 		} else {
-			localStorage.removeItem(STORAGE_KEY);
+			await del(STORAGE_KEY);
 		}
 	} catch (e) {
 		console.warn(
-			"Failed to save tree to localStorage:",
+			"Failed to save tree to IndexedDB:",
 			e instanceof Error ? e.message : "Unknown error",
 		);
-	}
-};
-
-export const parseStorageEvent = (
-	e: StorageEvent,
-): TreeNode | null | undefined => {
-	if (e.key !== STORAGE_KEY) return undefined;
-	try {
-		if (e.newValue) {
-			return validateTreeJSON(e.newValue);
-		}
-		return null;
-	} catch (err) {
-		console.warn(
-			"Failed to parse storage update:",
-			err instanceof Error ? err.message : "Unknown error",
-		);
-		return undefined;
 	}
 };
