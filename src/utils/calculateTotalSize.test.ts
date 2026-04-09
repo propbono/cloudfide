@@ -17,7 +17,9 @@ const mockTree: TreeNode = {
 					id: "components",
 					name: "components",
 					type: "folder",
-					children: [{ id: "Button.tsx", name: "Button.tsx", type: "file", size: 512 }],
+					children: [
+						{ id: "Button.tsx", name: "Button.tsx", type: "file", size: 512 },
+					],
 				},
 			],
 		},
@@ -27,7 +29,12 @@ const mockTree: TreeNode = {
 
 describe("calculateTotalSize", () => {
 	it("calculates file size correctly for flat nodes", () => {
-		const file: TreeNode = { id: "test.txt", name: "test.txt", type: "file", size: 100 };
+		const file: TreeNode = {
+			id: "test.txt",
+			name: "test.txt",
+			type: "file",
+			size: 100,
+		};
 		expect(calculateTotalSize(file)).toBe(100);
 	});
 
