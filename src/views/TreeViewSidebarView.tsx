@@ -101,8 +101,9 @@ export function TreeViewSidebarView() {
 						data={flattenedTree}
 						className="p-2"
 						components={{
-							List: forwardRef<HTMLUListElement>((props, ref) => (
-								<ul {...props} ref={ref} className="m-0 p-0" />
+							List: forwardRef<HTMLUListElement, React.HTMLProps<HTMLUListElement>>((props, ref) => (
+								// biome-ignore lint/suspicious/noExplicitAny: Virtuoso types force HTMLDivElement props
+								<ul {...(props as any)} ref={ref} className="m-0 p-0" />
 							)),
 						}}
 						itemContent={(_, { node, path, depth, isExpanded }) => (
