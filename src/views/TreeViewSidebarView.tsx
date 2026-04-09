@@ -81,7 +81,7 @@ export function TreeViewSidebarView() {
 							Search Results
 						</h3>
 						{searchResults && searchResults.length > 0 ? (
-							<ul className="space-y-1">
+							<div className="space-y-1">
 								{searchResults.map((result) => (
 									<TreeNodeItem
 										key={result.node.id}
@@ -90,7 +90,7 @@ export function TreeViewSidebarView() {
 										isSearchResult={true}
 									/>
 								))}
-							</ul>
+							</div>
 						) : (
 							<p className="text-sm text-gray-500 italic">No matches found.</p>
 						)}
@@ -101,9 +101,8 @@ export function TreeViewSidebarView() {
 						data={flattenedTree}
 						className="p-2"
 						components={{
-							List: forwardRef<HTMLUListElement, React.HTMLProps<HTMLUListElement>>((props, ref) => (
-								// biome-ignore lint/suspicious/noExplicitAny: Virtuoso types force HTMLDivElement props
-								<ul {...(props as any)} ref={ref} className="m-0 p-0" />
+							List: forwardRef<HTMLDivElement>((props, ref) => (
+								<div {...props} ref={ref} className="m-0 p-0" />
 							)),
 						}}
 						itemContent={(_, { node, path, depth, isExpanded }) => (

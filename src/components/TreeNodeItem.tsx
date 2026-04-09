@@ -36,7 +36,7 @@ export const TreeNodeItem = ({
 	};
 
 	return (
-		<li className="list-none">
+		<div className="list-none">
 			<div
 				className={`flex items-center group py-1 px-2 rounded-md transition-colors ${isActive ? "bg-indigo-50" : "hover:bg-gray-100"}`}
 			>
@@ -83,6 +83,6 @@ export const TreeNodeItem = ({
 					</Link>
 				</div>
 			</div>
-		</li>
+		</div>
 	);
 };
