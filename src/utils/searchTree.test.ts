@@ -3,22 +3,28 @@ import type { TreeNode } from "../types";
 import { searchTree } from "./searchTree";
 
 const mockTree: TreeNode = {
+	id: "root",
 	name: "root",
 	type: "folder",
 	children: [
 		{
+			id: "src",
 			name: "src",
 			type: "folder",
 			children: [
-				{ name: "index.ts", type: "file", size: 1024 },
+				{ id: "index.ts", name: "index.ts", type: "file", size: 1024 },
 				{
+					id: "components",
 					name: "components",
 					type: "folder",
-					children: [{ name: "Button.tsx", type: "file", size: 512 }],
+					children: [
+						{ id: "Button.tsx", name: "Button.tsx", type: "file", size: 512 },
+						{ id: "Header.tsx", name: "Header.tsx", type: "file", size: 256 },
+					],
 				},
 			],
 		},
-		{ name: "package.json", type: "file", size: 300 },
+		{ id: "package.json", name: "package.json", type: "file", size: 300 },
 	],
 };
 

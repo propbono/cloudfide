@@ -10,11 +10,12 @@ vi.mock("idb-keyval", () => ({
 }));
 
 const MOCK_TREE: TreeNode = {
+	id: "root",
 	type: "folder",
 	name: "root",
 	children: [
-		{ type: "file", name: "file1.txt", size: 1024 },
-		{ type: "folder", name: "src", children: [] },
+		{ id: "file1.txt", type: "file", name: "file1.txt", size: 1024 },
+		{ id: "src", type: "folder", name: "src", children: [] },
 	],
 };
 
